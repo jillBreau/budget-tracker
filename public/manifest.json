@@ -1,6 +1,6 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "Budget Tracker",
+  "name": "Budget Tracker",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,14 +8,14 @@
       "type": "image/x-icon"
     },
     {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
+      "src": "dollar_sign192.png",
+      "type": "image/jpeg",
+      "sizes": "192x178"
     },
     {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "src": "dollar_sign512.png",
+      "type": "image/jpeg",
+      "sizes": "512x474"
     }
   ],
   "start_url": ".",
