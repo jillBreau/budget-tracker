@@ -1,4 +1,5 @@
 import React, { FC, useState, Dispatch, SetStateAction } from 'react';
+import { CSVLink } from 'react-csv';
 import './App.css';
 
 import { Layout, Form, Input, Button, Space, InputNumber, Select, Statistic } from 'antd';
@@ -14,9 +15,11 @@ const App: FC = () => {
 
   const [netVal, setNetVal] : [any, Dispatch<SetStateAction<any>>] = useState({"Monthly": 0});
   const [netDisplay, setNetDisplay] : [string, Dispatch<SetStateAction<string>>] = useState("Monthly");
+  const [csvData, setCsvData] : [any, Dispatch<SetStateAction<any>>] = useState([]);
 
   const onFinish = (values: Store) => {
 
+    setCsvData((csvData: any) => []);
     let earnings : number = 0;
 
     for (const key in values) {
@@ -31,11 +34,11 @@ const App: FC = () => {
 
           amount = values[key][entry].amount * 8 * 5 * 52.143;
         
-        } else if (values[key][entry].period === "Daily5") {
+        } else if (values[key][entry].period === "PerWeekday") {
 
           amount = values[key][entry].amount * 5 * 52.143;
 
-        } else if (values[key][entry].period === "Daily7") {
+        } else if (values[key][entry].period === "Daily") {
 
           amount = values[key][entry].amount * 365;
 
@@ -57,7 +60,10 @@ const App: FC = () => {
 
         }
 
-        if (key === "income") {
+        const amountObj = createObj(amount, key, values[key][entry].name);
+        setCsvData((csvData: any) => [...csvData, amountObj]);
+
+        if (key === "Income") {
           earnings += amount;
         } else {
           earnings -= amount;
@@ -65,19 +71,29 @@ const App: FC = () => {
       }
     }
 
-    let earningsObj = {
-      "Hourly": earnings / (8 * 5 * 52.143),
-      "Daily5": earnings / (5 * 52.143),
-      "Daily7": earnings / (365),
-      "Weekly": earnings / (52.143),
-      "BiWeekly": earnings / (52.143 / 2),
-      "Monthly": earnings / (12),
-      "Annually": earnings
-    };
-
+    const earningsObj = createObj(earnings, "Earnings", "NET");
+    setCsvData((csvData: any) => [...csvData, earningsObj]);
     setNetVal(earningsObj);
 
   };
+
+  const createObj = (amount: number, type: string, name: string) : any => {
+
+    const amountObj = {
+      "Type": type,
+      "Name": name,
+      "Hourly": amount / (8 * 5 * 52.143),
+      "PerWeekday": amount / (5 * 52.143),
+      "Daily": amount / (365),
+      "Weekly": amount / (52.143),
+      "BiWeekly": amount / (52.143 / 2),
+      "Monthly": amount / (12),
+      "Annually": amount
+    };
+
+    return amountObj;
+
+  }
 
   return (
     <Layout>
@@ -125,8 +141,8 @@ const App: FC = () => {
             onChange={val => setNetDisplay(val)}
             defaultValue="Monthly">
             <Option value="Hourly">Hourly</Option>
-            <Option value="Daily5">Weekdays</Option>
-            <Option value="Daily7">Daily</Option>
+            <Option value="PerWeekday">Weekdays</Option>
+            <Option value="Daily">Daily</Option>
             <Option value="Weekly">Weekly</Option>
             <Option value="BiWeekly">Bi-Weekly</Option>
             <Option value="Monthly">Monthly</Option>
@@ -146,18 +162,24 @@ const App: FC = () => {
           <br></br>
           <br></br>
           <Form name="dynamic_budget" onFinish={onFinish} autoComplete="off">
-            <Form.List name="income">
+            <Form.List name="Income">
               {(fields, { add, remove }) => {
                 return (
                   <div>
                     {fields.map(field => (
                       <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
                         <span style={{color: 'green', fontWeight: 'bold'}}><UpOutlined /> Income</span>
-                        <Input 
-                            style={{
-                              width: '100%'
-                            }}
-                            placeholder="Name of income"/>
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'name']}
+                          fieldKey={[field.fieldKey, 'name']}
+                        >
+                          <Input 
+                              style={{
+                                width: '100%'
+                              }}
+                              placeholder="Name of income"/>
+                        </Form.Item>
                         <Form.Item
                           {...field}
                           name={[field.name, 'amount']}
@@ -182,8 +204,8 @@ const App: FC = () => {
                             }}
                             defaultValue="Monthly">
                             <Option value="Hourly">Hourly</Option>
-                            <Option value="Daily5">Weekdays</Option>
-                            <Option value="Daily7">Daily</Option>
+                            <Option value="PerWeekday">Weekdays</Option>
+                            <Option value="Daily">Daily</Option>
                             <Option value="Weekly">Weekly</Option>
                             <Option value="BiWeekly">Bi-Weekly</Option>
                             <Option value="Monthly">Monthly</Option>
@@ -213,18 +235,25 @@ const App: FC = () => {
               }}
             </Form.List>
 
-            <Form.List name="expenses">
+            <Form.List name="Expense">
               {(fields, { add, remove }) => {
                 return (
                   <div>
                     {fields.map(field => (
                       <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
                         <span style={{color: 'red', fontWeight: 'bold'}}><DownOutlined /> Expense</span>
-                        <Input 
-                            style={{
-                              width: '100%'
-                            }}
-                            placeholder="Name of expense"/>
+                        
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'name']}
+                          fieldKey={[field.fieldKey, 'name']}
+                        >
+                          <Input 
+                              style={{
+                                width: '100%'
+                              }}
+                              placeholder="Name of expense"/>
+                        </Form.Item>
                         <Form.Item
                           {...field}
                           name={[field.name, 'amount']}
@@ -248,8 +277,8 @@ const App: FC = () => {
                               width: '100%'
                             }}
                             defaultValue="Monthly">
-                            <Option value="Daily5">Weekdays</Option>
-                            <Option value="Daily7">Daily</Option>
+                            <Option value="PerWeekday">Weekdays</Option>
+                            <Option value="Daily">Daily</Option>
                             <Option value="Weekly">Weekly</Option>
                             <Option value="BiWeekly">Bi-Weekly</Option>
                             <Option value="Monthly">Monthly</Option>
@@ -284,6 +313,7 @@ const App: FC = () => {
                 Submit
               </Button>
             </Form.Item>
+            <Button><CSVLink filename={"budget.csv"} data={csvData}>Download your budget data as a spreadsheet (.csv)</CSVLink></Button>
           </Form>
         </Content>
       </Layout>
