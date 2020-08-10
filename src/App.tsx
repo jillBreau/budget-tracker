@@ -3,7 +3,7 @@ import './App.css';
 
 import { Layout, Form, Input, Button, Space, InputNumber, Select, Statistic } from 'antd';
 import { generate } from '@ant-design/colors';
-import {  MinusCircleOutlined, PlusOutlined  } from '@ant-design/icons';
+import {  MinusCircleOutlined, PlusOutlined, UpOutlined, DownOutlined  } from '@ant-design/icons';
 import { Store } from 'antd/lib/form/interface';
 const { Header, Footer, Sider, Content } = Layout;
 const { Option } = Select;
@@ -12,7 +12,8 @@ const turquoises : string[] = generate('#7af0d2');
 
 const App: FC = () => {
 
-  const [netVal, setNetVal] : [number, Dispatch<SetStateAction<number>>] = useState(0);
+  const [netVal, setNetVal] : [any, Dispatch<SetStateAction<any>>] = useState({"Monthly": 0});
+  const [netDisplay, setNetDisplay] : [string, Dispatch<SetStateAction<string>>] = useState("Monthly");
 
   const onFinish = (values: Store) => {
 
@@ -29,7 +30,7 @@ const App: FC = () => {
         if (values[key][entry].period === "Hourly") {
 
           amount = values[key][entry].amount * 8 * 5 * 52.143;
-
+        
         } else if (values[key][entry].period === "Daily5") {
 
           amount = values[key][entry].amount * 5 * 52.143;
@@ -56,7 +57,7 @@ const App: FC = () => {
 
         }
 
-        if (key == "income") {
+        if (key === "income") {
           earnings += amount;
         } else {
           earnings -= amount;
@@ -64,8 +65,17 @@ const App: FC = () => {
       }
     }
 
-    console.log('Received values of form:', values);
-    setNetVal(earnings);
+    let earningsObj = {
+      "Hourly": earnings / (8 * 5 * 52.143),
+      "Daily5": earnings / (5 * 52.143),
+      "Daily7": earnings / (365),
+      "Weekly": earnings / (52.143),
+      "BiWeekly": earnings / (52.143 / 2),
+      "Monthly": earnings / (12),
+      "Annually": earnings
+    };
+
+    setNetVal(earningsObj);
 
   };
 
@@ -82,6 +92,47 @@ const App: FC = () => {
         <h1 style={{color: turquoises[0]}}>Budget Tracker</h1>
       </Header>
       <Layout>
+      <Sider 
+          style={
+            { padding: '20px',
+            marginTop: 64,
+            minHeight: 1000,
+            backgroundColor: turquoises[4],
+            color: turquoises[9] }
+          }
+        >
+          {
+            (netVal[netDisplay] && netVal[netDisplay] < 0) ? (
+              <Statistic 
+                title="Your net earnings ($)" 
+                value={netVal[netDisplay]} 
+                valueStyle={{color: 'red'}} 
+                precision={2}
+              />
+            ) : (
+              <Statistic 
+                title="Your net earnings ($)" 
+                value={netVal[netDisplay]} 
+                valueStyle={{color: 'green'}} 
+                precision={2}
+              />
+            )
+          }
+          <Select
+            style={{
+              width: '100%'
+            }}
+            onChange={val => setNetDisplay(val)}
+            defaultValue="Monthly">
+            <Option value="Hourly">Hourly</Option>
+            <Option value="Daily5">Weekdays</Option>
+            <Option value="Daily7">Daily</Option>
+            <Option value="Weekly">Weekly</Option>
+            <Option value="BiWeekly">Bi-Weekly</Option>
+            <Option value="Monthly">Monthly</Option>
+            <Option value="Annually">Annually</Option>
+          </Select>
+        </Sider>
         <Content
           style={
             { padding: '20px 50px',
@@ -101,7 +152,7 @@ const App: FC = () => {
                   <div>
                     {fields.map(field => (
                       <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                        Income
+                        <span style={{color: 'green', fontWeight: 'bold'}}><UpOutlined /> Income</span>
                         <Input 
                             style={{
                               width: '100%'
@@ -153,7 +204,6 @@ const App: FC = () => {
                         onClick={() => {
                           add();
                         }}
-                        block
                       >
                         <PlusOutlined /> Add a source of income
                       </Button>
@@ -169,7 +219,7 @@ const App: FC = () => {
                   <div>
                     {fields.map(field => (
                       <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
-                        Expense
+                        <span style={{color: 'red', fontWeight: 'bold'}}><DownOutlined /> Expense</span>
                         <Input 
                             style={{
                               width: '100%'
@@ -220,7 +270,6 @@ const App: FC = () => {
                         onClick={() => {
                           add();
                         }}
-                        block
                       >
                         <PlusOutlined /> Add an expense
                       </Button>
@@ -237,33 +286,6 @@ const App: FC = () => {
             </Form.Item>
           </Form>
         </Content>
-        <Sider 
-          style={
-            { padding: '20px',
-            marginTop: 64,
-            minHeight: 1000,
-            backgroundColor: turquoises[4],
-            color: turquoises[9] }
-          }
-        >
-          {
-            (netVal >= 0) ? (
-              <Statistic 
-                title="Your net annual earnings ($)" 
-                value={netVal} 
-                valueStyle={{color: 'green'}} 
-                precision={2}
-              />
-            ) : (
-              <Statistic 
-                title="Your net annual earnings ($)" 
-                value={netVal} 
-                valueStyle={{color: 'red'}} 
-                precision={2}
-              />
-            )
-          }
-        </Sider>
       </Layout>
       <Footer 
         style={
