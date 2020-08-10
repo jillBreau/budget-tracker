@@ -4,7 +4,7 @@ import './App.css';
 
 import { Layout, Form, Input, Button, Space, InputNumber, Select, Statistic } from 'antd';
 import { generate } from '@ant-design/colors';
-import {  MinusCircleOutlined, PlusOutlined, UpOutlined, DownOutlined  } from '@ant-design/icons';
+import {  MinusCircleOutlined, PlusOutlined, UpOutlined, DownOutlined, DownloadOutlined, DollarCircleOutlined } from '@ant-design/icons';
 import { Store } from 'antd/lib/form/interface';
 const { Header, Footer, Sider, Content } = Layout;
 const { Option } = Select;
@@ -99,22 +99,27 @@ const App: FC = () => {
     <Layout>
       <Header 
         style={
-          { position: 'fixed',
+          { 
+            position: 'fixed',
             zIndex: 1,
             width: '100%',
-            backgroundColor: turquoises[7] }
+            backgroundColor: turquoises[7] 
+          }
         }
       >
-        <h1 style={{color: turquoises[0]}}>Budget Tracker</h1>
+        <h1 style={{color: turquoises[0]}}>
+          <DollarCircleOutlined /> Budget Tracker
+        </h1>
       </Header>
       <Layout>
       <Sider 
           style={
-            { padding: '20px',
-            marginTop: 64,
-            minHeight: 1000,
-            backgroundColor: turquoises[4],
-            color: turquoises[9] }
+            { 
+              padding: '20px',
+              marginTop: 64,
+              minHeight: 1000,
+              backgroundColor: turquoises[4] 
+            }
           }
         >
           {
@@ -135,9 +140,7 @@ const App: FC = () => {
             )
           }
           <Select
-            style={{
-              width: '100%'
-            }}
+            style={{width: '100%'}}
             onChange={val => setNetDisplay(val)}
             defaultValue="Monthly">
             <Option value="Hourly">Hourly</Option>
@@ -151,11 +154,13 @@ const App: FC = () => {
         </Sider>
         <Content
           style={
-            { padding: '20px 50px',
+            { 
+              padding: '20px 50px',
               marginTop: 64,
               minHeight: 1000,
               backgroundColor: turquoises[1],
-              color: turquoises[9] }
+              color: turquoises[9] 
+            }
           }
         >
           Track your income and expenses to determine your net earnings.
@@ -175,9 +180,7 @@ const App: FC = () => {
                           fieldKey={[field.fieldKey, 'name']}
                         >
                           <Input 
-                              style={{
-                                width: '100%'
-                              }}
+                              style={{width: '100%'}}
                               placeholder="Name of income"/>
                         </Form.Item>
                         <Form.Item
@@ -187,9 +190,7 @@ const App: FC = () => {
                           rules={[{ required: true, message: 'Missing income amount' }]}
                         >
                           <InputNumber 
-                            style={{
-                              width: '100%'
-                            }}
+                            style={{width: '100%'}}
                             placeholder="Income Amount"
                             formatter={value => `$${value}`} />
                         </Form.Item>
@@ -199,9 +200,7 @@ const App: FC = () => {
                           fieldKey={[field.fieldKey, 'period']}
                         >
                           <Select
-                            style={{
-                              width: '100%'
-                            }}
+                            style={{width: '100%'}}
                             defaultValue="Monthly">
                             <Option value="Hourly">Hourly</Option>
                             <Option value="PerWeekday">Weekdays</Option>
@@ -242,16 +241,13 @@ const App: FC = () => {
                     {fields.map(field => (
                       <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
                         <span style={{color: 'red', fontWeight: 'bold'}}><DownOutlined /> Expense</span>
-                        
                         <Form.Item
                           {...field}
                           name={[field.name, 'name']}
                           fieldKey={[field.fieldKey, 'name']}
                         >
                           <Input 
-                              style={{
-                                width: '100%'
-                              }}
+                              style={{width: '100%'}}
                               placeholder="Name of expense"/>
                         </Form.Item>
                         <Form.Item
@@ -261,9 +257,7 @@ const App: FC = () => {
                           rules={[{ required: true, message: 'Missing expense amount' }]}
                         >
                           <InputNumber 
-                            style={{
-                              width: '100%'
-                            }}
+                            style={{width: '100%'}}
                             placeholder="Expense Amount"
                             formatter={value => `$${value}`} />
                         </Form.Item>
@@ -273,9 +267,7 @@ const App: FC = () => {
                           fieldKey={[field.fieldKey, 'period']}
                         >
                           <Select
-                            style={{
-                              width: '100%'
-                            }}
+                            style={{width: '100%'}}
                             defaultValue="Monthly">
                             <Option value="PerWeekday">Weekdays</Option>
                             <Option value="Daily">Daily</Option>
@@ -309,22 +301,31 @@ const App: FC = () => {
             </Form.List>
 
             <Form.Item>
-              <Button type="primary" htmlType="submit">
+              <Button type="primary" htmlType="submit" size="large">
                 Submit
               </Button>
+              <br></br>
+              <br></br>
             </Form.Item>
-            <Button><CSVLink filename={"budget.csv"} data={csvData}>Download your budget data as a spreadsheet (.csv)</CSVLink></Button>
+            <Button shape="round">
+              <CSVLink filename={"budget.csv"} data={csvData}>
+                <DownloadOutlined /> Download your budget data as a spreadsheet (.csv)
+              </CSVLink>
+            </Button>
+
           </Form>
         </Content>
       </Layout>
       <Footer 
         style={
-          { position: "fixed",
+          { 
+            position: "fixed",
             bottom: "0",
             left: "0",
             width: '100%',
             backgroundColor: turquoises[7],
-            color: turquoises[0] }
+            color: turquoises[0] 
+          }
         }
       >
         * Hourly income is based on a 40-hour work week *
