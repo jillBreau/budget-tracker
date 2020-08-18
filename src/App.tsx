@@ -20,7 +20,7 @@ const App: FC = () => {
   const onFinish = (values: Store) => {
 
     setCsvData((csvData: any) => []);
-    let earnings : number = 0;
+    let balance : number = 0;
 
     for (const key in values) {
       for (const entry in values[key]) {
@@ -64,16 +64,16 @@ const App: FC = () => {
         setCsvData((csvData: any) => [...csvData, amountObj]);
 
         if (key === "Income") {
-          earnings += amount;
+          balance += amount;
         } else {
-          earnings -= amount;
+          balance -= amount;
         }
       }
     }
 
-    const earningsObj = createObj(earnings, "Earnings", "NET");
-    setCsvData((csvData: any) => [...csvData, earningsObj]);
-    setNetVal(earningsObj);
+    const balanceObj = createObj(balance, "Balance", "NET");
+    setCsvData((csvData: any) => [...csvData, balanceObj]);
+    setNetVal(balanceObj);
 
   };
 
@@ -125,14 +125,14 @@ const App: FC = () => {
           {
             (netVal[netDisplay] && netVal[netDisplay] < 0) ? (
               <Statistic 
-                title="Your net earnings ($)" 
+                title="Your net balance ($)" 
                 value={netVal[netDisplay]} 
                 valueStyle={{color: 'red'}} 
                 precision={2}
               />
             ) : (
               <Statistic 
-                title="Your net earnings ($)" 
+                title="Your net balance ($)" 
                 value={netVal[netDisplay]} 
                 valueStyle={{color: 'green'}} 
                 precision={2}
@@ -163,7 +163,7 @@ const App: FC = () => {
             }
           }
         >
-          Track your income and expenses to determine your net earnings.
+          Track your income and expenses to determine your net balance.
           <br></br>
           <br></br>
           <Form name="dynamic_budget" onFinish={onFinish} autoComplete="off">
@@ -171,6 +171,16 @@ const App: FC = () => {
               {(fields, { add, remove }) => {
                 return (
                   <div>
+                    <Form.Item>
+                      <Button
+                        type="dashed"
+                        onClick={() => {
+                          add();
+                        }}
+                      >
+                        <PlusOutlined /> Add a source of income
+                      </Button>
+                    </Form.Item>
                     {fields.map(field => (
                       <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
                         <span style={{color: 'green', fontWeight: 'bold'}}><UpOutlined /> Income</span>
@@ -218,17 +228,6 @@ const App: FC = () => {
                         />
                       </Space>
                     ))}
-
-                    <Form.Item>
-                      <Button
-                        type="dashed"
-                        onClick={() => {
-                          add();
-                        }}
-                      >
-                        <PlusOutlined /> Add a source of income
-                      </Button>
-                    </Form.Item>
                   </div>
                 );
               }}
@@ -238,6 +237,16 @@ const App: FC = () => {
               {(fields, { add, remove }) => {
                 return (
                   <div>
+                    <Form.Item>
+                      <Button
+                        type="dashed"
+                        onClick={() => {
+                          add();
+                        }}
+                      >
+                        <PlusOutlined /> Add an expense
+                      </Button>
+                    </Form.Item>
                     {fields.map(field => (
                       <Space key={field.key} style={{ display: 'flex', marginBottom: 8 }} align="baseline">
                         <span style={{color: 'red', fontWeight: 'bold'}}><DownOutlined /> Expense</span>
@@ -284,17 +293,6 @@ const App: FC = () => {
                         />
                       </Space>
                     ))}
-
-                    <Form.Item>
-                      <Button
-                        type="dashed"
-                        onClick={() => {
-                          add();
-                        }}
-                      >
-                        <PlusOutlined /> Add an expense
-                      </Button>
-                    </Form.Item>
                   </div>
                 );
               }}
