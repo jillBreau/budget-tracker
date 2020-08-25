@@ -15,10 +15,13 @@ const App: FC = () => {
 
   const [netVal, setNetVal] : [any, Dispatch<SetStateAction<any>>] = useState({"Monthly": 0});
   const [netDisplay, setNetDisplay] : [string, Dispatch<SetStateAction<string>>] = useState("Monthly");
+  const [hours, setHours] : [number, Dispatch<SetStateAction<number>>] = useState(40);
+  const [formVals, setFormVals] : [any, Dispatch<SetStateAction<any>>] = useState({});
   const [csvData, setCsvData] : [any, Dispatch<SetStateAction<any>>] = useState([]);
 
   const onFinish = (values: Store) => {
 
+    setFormVals(values);
     setCsvData((csvData: any) => []);
     let balance : number = 0;
 
@@ -32,7 +35,7 @@ const App: FC = () => {
 
         if (values[key][entry].period === "Hourly") {
 
-          amount = values[key][entry].amount * 8 * 5 * 52.143;
+          amount = values[key][entry].amount * hours * 52.143;
         
         } else if (values[key][entry].period === "PerWeekday") {
 
@@ -77,12 +80,23 @@ const App: FC = () => {
 
   };
 
+  const OnChangeHours = (value: any) => {
+
+    if (value === undefined) {
+      value = 40;
+    }
+
+    setHours(value);
+    onFinish(formVals);
+
+  }
+
   const createObj = (amount: number, type: string, name: string) : any => {
 
     const amountObj = {
       "Type": type,
       "Name": name,
-      "Hourly": amount / (8 * 5 * 52.143),
+      "Hourly": amount / (hours * 52.143),
       "PerWeekday": amount / (5 * 52.143),
       "Daily": amount / (365),
       "Weekly": amount / (52.143),
@@ -326,7 +340,18 @@ const App: FC = () => {
           }
         }
       >
-        * Hourly income is based on a 40-hour work week *
+        <span style={{ fontSize: '16px'}}>* Hourly income is based on a </span>
+        <InputNumber 
+          min={0.5} 
+          max={168} 
+          defaultValue={40} 
+          step={0.5}
+          value={hours}
+          onChange={OnChangeHours}
+          size="small" 
+          style={{ width: '65px' }} 
+        />
+        <span style={{ fontSize: '16px'}}> hour work week *</span>
       </Footer>
     </Layout>
     
